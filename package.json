@@ -1,0 +1,56 @@
+{
+  "name": "react-design-tokens",
+  "version": "0.1.0",
+  "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
+  "license": "MIT",
+  "repository": "git@github.com:mimshins/react-design-tokens.git",
+  "sideEffects": false,
+  "keywords": [
+    "react",
+    "theming",
+    "create theme",
+    "theme provider",
+    "design tokens",
+    "css variables",
+    "react css theming",
+    "theming"
+  ],
+  "scripts": {
+    "next:dev": "next dev",
+    "next:build": "next build",
+    "next:start": "next start",
+    "lint": "tsc --project tsconfig.lint.json && eslint \"lib/**/*.{ts,tsx}\" --config .eslintrc --quiet --fix",
+    "clear": "rimraf dist",
+    "prebuild": "npm-run-all clear lint",
+    "build": "npm-run-all build:cjs build:esm build:minify build:packages build:npm-files",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:packages": "",
+    "build:npm-files": "",
+    "build:minify": ""
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.6",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "next": "^13.2.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^4.3.1",
+    "typescript": "^4.9.5"
+  }
+}
