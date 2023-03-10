@@ -1,4 +1,4 @@
-import { createTheming } from "../lib";
+import { createTheming, defaultCssVariableGenerator } from "../lib";
 
 export const theme = {
   colors: {
@@ -34,20 +34,10 @@ const tokenFamilyNameMap: Record<keyof typeof theme, string> = {
 };
 
 export const { ThemeProvider, useTheme } = createTheming<typeof theme>({
-  cssVariableGenerator: (tokenFamilyKey, tokenPath, tokenValue) => {
-    if (!["string", "number"].includes(typeof tokenValue)) return null;
-
-    const segments = tokenPath
-      .split(".")
-      .filter(Boolean)
-      .map(s => s.toLowerCase());
-
-    return {
-      variable: `${tokenFamilyNameMap[tokenFamilyKey].toLowerCase()}${
-        segments.length > 0 ? "-".concat(segments.join("-")) : ""
-      }`,
-      value:
-        typeof tokenValue === "number" ? `${tokenValue}px` : String(tokenValue)
-    };
-  }
+  cssVariableGenerator: (tokenFamilyKey, tokenPath, tokenValue) =>
+    defaultCssVariableGenerator(
+      tokenFamilyNameMap[tokenFamilyKey].toLowerCase(),
+      tokenPath,
+      tokenValue
+    )
 });
