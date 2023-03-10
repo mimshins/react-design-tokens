@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
-import { deepMerge, isPlainObject, shallowMerge } from "./helpers";
+import { deepMerge, isPlainObject } from "./helpers";
 
 type AnyObject = Record<keyof any, any>;
 
@@ -19,7 +19,6 @@ interface CSSVariableProviderProps<T> {
 }
 
 interface ThemingConfig<T> {
-  mergeStrategy?: "shallow" | "deep";
   cssVariableGenerator?: (
     tokenFamilyKey: keyof T,
     tokenPath: string,
@@ -27,7 +26,7 @@ interface ThemingConfig<T> {
   ) => { variable: string; value: string } | null;
 }
 
-const defaultCssVariableGenerator = (
+export const defaultCssVariableGenerator = (
   tokenFamilyKey: string,
   tokenPath: string,
   tokenValue: unknown
@@ -49,12 +48,7 @@ const defaultCssVariableGenerator = (
 };
 
 const createTheming = <T extends AnyObject>(config?: ThemingConfig<T>) => {
-  const {
-    mergeStrategy = "deep",
-    cssVariableGenerator = defaultCssVariableGenerator
-  } = config ?? {};
-
-  const merge = mergeStrategy === "deep" ? deepMerge : shallowMerge;
+  const { cssVariableGenerator = defaultCssVariableGenerator } = config ?? {};
 
   const ThemeContext = React.createContext<T | null>(null);
 
@@ -111,7 +105,7 @@ const createTheming = <T extends AnyObject>(config?: ThemingConfig<T>) => {
     const outerTheme = useTheme();
 
     const theme = React.useMemo<T>(
-      () => (outerTheme ? merge(outerTheme, localTheme) : localTheme) as T,
+      () => (outerTheme ? deepMerge(outerTheme, localTheme) : localTheme) as T,
       [localTheme, outerTheme]
     );
 
