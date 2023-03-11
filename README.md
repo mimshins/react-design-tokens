@@ -113,7 +113,7 @@ export const theme = {
 
 export type Theme = typeof theme;
 
-export const { ThemeProvider, useTheme } = createTheming<Theme>();
+export const { ThemeProvider, useTheme } = createTheming(theme);
 ```
 
 3. Provide the theme:
