@@ -139,7 +139,7 @@ export default App;
 
 ## Notes
 
-- You can only access to the CSS variables in a sub-tree which is being wrapped with `ThemeProvider`. (In other words, each sub-tree has it's own CSS variables)
+- You can only access the CSS variables in a sub-tree which is being wrapped with `ThemeProvider`. (In other words, each sub-tree has it's own CSS variables)
 
 - Inner theme objects will be merged with outer theme objects. So to override an outer theme, just provide the tokens you want to change in the child-tree:
 ```tsx
