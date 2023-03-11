@@ -1,6 +1,6 @@
 {
   "name": "react-design-tokens",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
   "license": "MIT",
   "repository": "git@github.com:mimshins/react-design-tokens.git",
