@@ -26,11 +26,13 @@ export const theme = {
         elevated: "14"
       }
     }
-  }
+  },
+  dark: 1
 };
 
 const tokenFamilyNameMap: Record<keyof typeof theme, string> = {
-  colors: "color"
+  colors: "color",
+  dark: "dark"
 };
 
 export const { ThemeProvider, useTheme } = createTheming<typeof theme>({
