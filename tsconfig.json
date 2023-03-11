@@ -27,6 +27,6 @@
     "jsx": "preserve",
     "plugins": [{ "name": "next" }]
   },
-  "include": ["lib", "app", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": ["lib", "app", "scripts", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
