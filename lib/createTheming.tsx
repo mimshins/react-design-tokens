@@ -33,14 +33,11 @@ export const defaultCssVariableGenerator = (
 ) => {
   if (!["string", "number"].includes(typeof tokenValue)) return null;
 
-  const segments = tokenPath
-    .split(".")
-    .filter(Boolean)
-    .map(s => s.toLowerCase());
+  const pathString = tokenPath.replaceAll(".", "-").toLowerCase();
 
   return {
     variable: `${tokenFamilyKey.toLowerCase()}${
-      segments.length > 0 ? "-".concat(segments.join("-")) : ""
+      pathString.length > 0 ? "-".concat(pathString) : ""
     }`,
     value:
       typeof tokenValue === "number" ? `${tokenValue}px` : String(tokenValue)
