@@ -35,7 +35,7 @@ const tokenFamilyNameMap: Record<keyof typeof theme, string> = {
   dark: "dark"
 };
 
-export const { ThemeProvider, useTheme } = createTheming<typeof theme>({
+export const { ThemeProvider, useTheme } = createTheming(theme, {
   cssVariableGenerator: (tokenFamilyKey, tokenPath, tokenValue) =>
     defaultCssVariableGenerator(
       tokenFamilyNameMap[tokenFamilyKey].toLowerCase(),
