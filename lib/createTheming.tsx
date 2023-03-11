@@ -44,12 +44,15 @@ export const defaultCssVariableGenerator = (
   };
 };
 
-const createTheming = <T extends AnyObject>(config?: ThemingConfig<T>) => {
+const createTheming = <T extends AnyObject>(
+  defaultTheme: T,
+  config?: ThemingConfig<T>
+) => {
   const { cssVariableGenerator = defaultCssVariableGenerator } = config ?? {};
 
-  const ThemeContext = React.createContext<T | null>(null);
+  const ThemeContext = React.createContext<T>(defaultTheme);
 
-  const useTheme = (): T | null => React.useContext(ThemeContext);
+  const useTheme = (): T => React.useContext(ThemeContext);
 
   const generateCssVariables = (
     theme: AnyObject,
@@ -101,8 +104,11 @@ const createTheming = <T extends AnyObject>(config?: ThemingConfig<T>) => {
 
     const outerTheme = useTheme();
 
-    const theme = React.useMemo<T>(
-      () => (outerTheme ? deepMerge(outerTheme, localTheme) : localTheme) as T,
+    const theme = React.useMemo(
+      () =>
+        outerTheme === localTheme
+          ? (localTheme as T)
+          : (deepMerge(outerTheme, localTheme) as T),
       [localTheme, outerTheme]
     );
 
