@@ -4,6 +4,24 @@ An optimized and creative theming solution that generates CSS variables based on
 
 <hr />
 
+## Installation
+
+> Please note that [react](https://www.npmjs.com/package/react) >= 17 and [react-dom](https://www.npmjs.com/package/react-dom) >= 17 are peer dependencies.
+
+Run the following script to install and save in your `package.json` dependencies:
+```bash
+# with npm
+npm install react-design-tokens
+
+# or with yarn
+yarn add react-design-tokens
+
+# or with pnpm
+pnpm add react-design-tokens
+```
+
+<hr />
+
 ## API
 
 The exposed APIs:
@@ -75,7 +93,7 @@ export const theme = {
 export type Theme = typeof theme;
 ```
 
-2. Create a theming for your theme: \
+2. Create a theming client for your theme: \
 (We recommend to create a theming for each theme object)
 ```ts
 // theming.ts
@@ -134,6 +152,25 @@ export default App;
 ```
 
 4. You can now access the `theme` object down the tree using `useTheme` hook. Also you have access to the generated CSS variables in your CSS.
+
+The CSS variables generated for this theme with default configuration are as follows:
+```
+--colors-primary-base: 1;
+--colors-primary-hover: 2;
+--colors-primary-active: 3;
+--colors-primary-disabled: 4;
+--colors-secondary-base: 5;
+--colors-secondary-hover: 6;
+--colors-secondary-active: 7;
+--colors-secondary-disabled: 8;
+--colors-neutral-text-base: 9;
+--colors-neutral-text-secondary: 10;
+--colors-neutral-text-tertiary: 11;
+--colors-neutral-background-base: 12;
+--colors-neutral-background-container: 13;
+--colors-neutral-background-elevated: 14;
+--dark: 1px;
+```
 
 <hr />
 
