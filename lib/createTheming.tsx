@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
-import { deepMerge, isPlainObject } from "./helpers";
+import { deepMerge, isPlainObject, useIsomorphicLayoutEffect } from "./helpers";
 
 type AnyObject = Record<keyof any, any>;
 
@@ -16,9 +16,11 @@ interface ThemeProviderProps<T> {
 interface CSSVariableProviderProps<T> {
   children: React.ReactNode;
   theme: DeepPartial<T>;
+  isInitialTheme: boolean;
 }
 
 interface ThemingConfig<T> {
+  initializeVariablesOnHTMLRoot?: boolean;
   cssVariableGenerator?: (
     tokenFamilyKey: keyof T,
     tokenPath: string,
@@ -48,19 +50,32 @@ const createTheming = <T extends AnyObject>(
   defaultTheme: T,
   config?: ThemingConfig<T>
 ) => {
-  const { cssVariableGenerator = defaultCssVariableGenerator } = config ?? {};
+  const {
+    cssVariableGenerator = defaultCssVariableGenerator,
+    initializeVariablesOnHTMLRoot = false
+  } = config ?? {};
 
-  const ThemeContext = React.createContext<T>(defaultTheme);
+  const ThemeContext = React.createContext<T>({
+    ...defaultTheme,
+    __viaProvider: false
+  });
 
   const useTheme = (): T => React.useContext(ThemeContext);
+
+  type GeneratedCSSVariables = Array<{
+    variable: string;
+    value: string;
+  } | null>;
 
   const generateCssVariables = (
     theme: AnyObject,
     path: string[] = []
-  ): Array<{ variable: string; value: string } | null> => {
+  ): GeneratedCSSVariables => {
     return Object.entries(theme)
       .map(([key, value]) => {
         const newPath = [...path, key];
+
+        if (key === "__viaProvider") return null;
 
         if (!isPlainObject(value)) {
           return cssVariableGenerator(
@@ -75,25 +90,47 @@ const createTheming = <T extends AnyObject>(
       .flat();
   };
 
+  const attachVariables = (
+    node: HTMLElement,
+    generatedVariables: GeneratedCSSVariables
+  ) => {
+    generatedVariables.forEach(v => {
+      if (!v) return;
+
+      node.style.setProperty(`--${v.variable}`, v.value);
+    });
+  };
+
   const CSSVariableProvider = (props: CSSVariableProviderProps<T>) => {
-    const { children, theme } = props;
+    const { children, theme, isInitialTheme } = props;
 
     const generatedVariables = React.useMemo(
       () => generateCssVariables(theme),
       [theme]
     );
 
-    const refCallback = (node: HTMLDivElement | null) => {
-      if (!node) return;
-      generatedVariables.forEach(v => {
-        if (!v) return;
+    const willAttachOnHTMLRoot =
+      isInitialTheme && initializeVariablesOnHTMLRoot;
 
-        node.style.setProperty(`--${v.variable}`, v.value);
-      });
+    useIsomorphicLayoutEffect(() => {
+      if (!willAttachOnHTMLRoot) return;
+
+      attachVariables(document.documentElement, generatedVariables);
+    }, [generatedVariables, willAttachOnHTMLRoot]);
+
+    const refCallback = (node: HTMLDivElement | null) => {
+      if (willAttachOnHTMLRoot) return;
+      if (!node) return;
+
+      attachVariables(node, generatedVariables);
     };
 
     return (
-      <div ref={refCallback} data-name="CSSVariableProvider">
+      <div
+        ref={refCallback}
+        data-name="CSSVariableProvider"
+        data-attached-on-html-root={willAttachOnHTMLRoot ? "" : undefined}
+      >
         {children}
       </div>
     );
@@ -104,17 +141,21 @@ const createTheming = <T extends AnyObject>(
 
     const outerTheme = useTheme();
 
+    const isInitialTheme = !outerTheme.__viaProvider;
+
     const theme = React.useMemo(
       () =>
-        outerTheme === localTheme
+        isInitialTheme
           ? (localTheme as T)
           : (deepMerge(outerTheme, localTheme) as T),
-      [localTheme, outerTheme]
+      [localTheme, outerTheme, isInitialTheme]
     );
 
     return (
-      <ThemeContext.Provider value={theme}>
-        <CSSVariableProvider theme={localTheme}>{children}</CSSVariableProvider>
+      <ThemeContext.Provider value={{ ...theme, __viaProvider: true }}>
+        <CSSVariableProvider theme={localTheme} isInitialTheme={isInitialTheme}>
+          {children}
+        </CSSVariableProvider>
       </ThemeContext.Provider>
     );
   };
