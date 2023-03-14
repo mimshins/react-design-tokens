@@ -32,10 +32,12 @@ The main exposed API which will return:\
 `ThemeProvider`: A React Context Provider to provide the theme object down the tree and also populate the generated CSS variables for it's children.
   - `defaultTheme`\
   The default theme which will be used as `ThemeContext`'s default value.
-  - [`optional`] `config`\
+  - `config` [optional]\
   The theming configuration object.
-    - [`optional`] `config.cssVariableGenerator`\
+    - `config.cssVariableGenerator` [optional]\
     The function which is being used to generate CSS variables based on the provided theme object.
+    - `config.initializeVariablesOnHTMLRoot` [optional | default: `false`]\
+    If set to `true`, initial `<ThemeProvider>` will attach CSS variables to the HTML element (Also known as `:root`).
 
 - `defaultCssVariableGenerator(tokenFamilyKey, tokenPath, tokenValue)`\
 The default CSS variable generate function. The generated variables obey the following rules:\
