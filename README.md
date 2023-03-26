@@ -26,10 +26,11 @@ pnpm add react-design-tokens
 
 The exposed APIs:
 
-- `createTheming(defaultTheme, config?) => { useTheme, ThemeProvider }`\
+- `createTheming(defaultTheme, config?) => { useTheme, getVariablesAsStyles, ThemeProvider }`\
 The main exposed API which will return:\
 `useTheme`: A React Hook to hook into the provided theme object.\
 `ThemeProvider`: A React Context Provider to provide the theme object down the tree and also populate the generated CSS variables for it's children.
+`getVariablesAsStyles`: A helper function that gets a theme object and returns its CSS variables as inline `style` DOM property. (Useful when you want to opt-in `initializeVariablesOnHTMLRoot` and you also want your variables to be attached to `:root` during SSR)
   - `defaultTheme`\
   The default theme which will be used as `ThemeContext`'s default value.
   - `config` [optional]\
