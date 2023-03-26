@@ -90,14 +90,34 @@ const createTheming = <T extends AnyObject>(
       .flat();
   };
 
+  const convertVariablesToStyles = (
+    generatedVariables: GeneratedCSSVariables
+  ) =>
+    generatedVariables.reduce((result, v) => {
+      if (!v) return result;
+      return { ...result, [`--${v.variable}`]: v.value };
+    }, {} as Record<string, string>);
+
+  const getVariablesAsStyles = (theme: DeepPartial<T>) =>
+    convertVariablesToStyles(generateCssVariables(theme));
+
   const attachVariables = (
     node: HTMLElement,
     generatedVariables: GeneratedCSSVariables
   ) => {
     generatedVariables.forEach(v => {
       if (!v) return;
-
       node.style.setProperty(`--${v.variable}`, v.value);
+    });
+  };
+
+  const detachVariables = (
+    node: HTMLElement,
+    generatedVariables: GeneratedCSSVariables
+  ) => {
+    generatedVariables.forEach(v => {
+      if (!v) return;
+      node.style.removeProperty(`--${v.variable}`);
     });
   };
 
@@ -112,22 +132,27 @@ const createTheming = <T extends AnyObject>(
     const willAttachOnHTMLRoot =
       isInitialTheme && initializeVariablesOnHTMLRoot;
 
+    const variablesAsStyles = React.useMemo(
+      () =>
+        !willAttachOnHTMLRoot
+          ? convertVariablesToStyles(generatedVariables)
+          : undefined,
+      [generatedVariables, willAttachOnHTMLRoot]
+    );
+
     useIsomorphicLayoutEffect(() => {
       if (!willAttachOnHTMLRoot) return;
 
       attachVariables(document.documentElement, generatedVariables);
+
+      return () => {
+        detachVariables(document.documentElement, generatedVariables);
+      };
     }, [generatedVariables, willAttachOnHTMLRoot]);
-
-    const refCallback = (node: HTMLDivElement | null) => {
-      if (willAttachOnHTMLRoot) return;
-      if (!node) return;
-
-      attachVariables(node, generatedVariables);
-    };
 
     return (
       <div
-        ref={refCallback}
+        style={variablesAsStyles}
         data-name="CSSVariableProvider"
         data-attached-on-html-root={willAttachOnHTMLRoot ? "" : undefined}
       >
@@ -160,7 +185,11 @@ const createTheming = <T extends AnyObject>(
     );
   };
 
-  return { useTheme, ThemeProvider };
+  return {
+    useTheme,
+    ThemeProvider,
+    getVariablesAsStyles
+  };
 };
 
 export default createTheming;
