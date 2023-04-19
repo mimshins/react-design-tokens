@@ -70,8 +70,8 @@ const createTheming = <T extends AnyObject>(
   const generateCssVariables = (
     theme: AnyObject,
     path: string[] = []
-  ): GeneratedCSSVariables => {
-    return Object.entries(theme)
+  ): GeneratedCSSVariables =>
+    Object.entries(theme)
       .map(([key, value]) => {
         const newPath = [...path, key];
 
@@ -88,14 +88,13 @@ const createTheming = <T extends AnyObject>(
         return generateCssVariables(value as AnyObject, newPath);
       })
       .flat();
-  };
 
   const convertVariablesToStyles = (
     generatedVariables: GeneratedCSSVariables
   ) =>
     generatedVariables.reduce((result, v) => {
-      if (!v) return result;
-      return { ...result, [`--${v.variable}`]: v.value };
+      if (v) result[`--${v.variable}`] = v.value;
+      return result;
     }, {} as Record<string, string>);
 
   const getVariablesAsStyles = (theme: DeepPartial<T>) =>
@@ -168,16 +167,19 @@ const createTheming = <T extends AnyObject>(
 
     const isInitialTheme = !outerTheme.__viaProvider;
 
-    const theme = React.useMemo(
-      () =>
-        isInitialTheme
-          ? (localTheme as T)
-          : (deepMerge(outerTheme, localTheme) as T),
-      [localTheme, outerTheme, isInitialTheme]
-    );
+    const theme = React.useMemo(() => {
+      const theme = isInitialTheme
+        ? (localTheme as T)
+        : (deepMerge(outerTheme, localTheme) as T);
+
+      // @ts-expect-error internal property of AnyObject
+      theme.__viaProvider = true;
+
+      return theme;
+    }, [localTheme, outerTheme, isInitialTheme]);
 
     return (
-      <ThemeContext.Provider value={{ ...theme, __viaProvider: true }}>
+      <ThemeContext.Provider value={theme}>
         <CSSVariableProvider theme={localTheme} isInitialTheme={isInitialTheme}>
           {children}
         </CSSVariableProvider>
