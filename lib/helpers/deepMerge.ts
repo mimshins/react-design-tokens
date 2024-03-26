@@ -16,7 +16,7 @@ type Merged<T, S> = { [P in keyof S]: S[P] } & {
 const deepMerge = <T extends AnyObject, S extends AnyObject>(
   target: T,
   source: S,
-  clone = true
+  clone = true,
 ): Merged<T, S> => {
   const output: Merged<T, S> = clone ? { ...target } : target;
 
