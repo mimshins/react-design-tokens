@@ -6,7 +6,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:mimshins/react-design-tokens.git"
+    "url": "git@github.com:mimshins/react-design-tokens.git"
   },
   "publishConfig": {
     "access": "public",
