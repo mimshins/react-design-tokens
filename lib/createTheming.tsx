@@ -24,14 +24,14 @@ interface ThemingConfig<T> {
   cssVariableGenerator?: (
     tokenFamilyKey: keyof T,
     tokenPath: string,
-    tokenValue: unknown
+    tokenValue: unknown,
   ) => { variable: string; value: string } | null;
 }
 
 export const defaultCssVariableGenerator = (
   tokenFamilyKey: string,
   tokenPath: string,
-  tokenValue: unknown
+  tokenValue: unknown,
 ) => {
   if (!["string", "number"].includes(typeof tokenValue)) return null;
 
@@ -42,22 +42,22 @@ export const defaultCssVariableGenerator = (
       pathString.length > 0 ? "-".concat(pathString) : ""
     }`,
     value:
-      typeof tokenValue === "number" ? `${tokenValue}px` : String(tokenValue)
+      typeof tokenValue === "number" ? `${tokenValue}px` : String(tokenValue),
   };
 };
 
 const createTheming = <T extends AnyObject>(
   defaultTheme: T,
-  config?: ThemingConfig<T>
+  config?: ThemingConfig<T>,
 ) => {
   const {
     cssVariableGenerator = defaultCssVariableGenerator,
-    initializeVariablesOnHTMLRoot = false
+    initializeVariablesOnHTMLRoot = false,
   } = config ?? {};
 
   const ThemeContext = React.createContext<T>({
     ...defaultTheme,
-    __viaProvider: false
+    __viaProvider: false,
   });
 
   const useTheme = (): T => React.useContext(ThemeContext);
@@ -69,7 +69,7 @@ const createTheming = <T extends AnyObject>(
 
   const generateCssVariables = (
     theme: AnyObject,
-    path: string[] = []
+    path: string[] = [],
   ): GeneratedCSSVariables =>
     Object.entries(theme)
       .map(([key, value]) => {
@@ -81,7 +81,7 @@ const createTheming = <T extends AnyObject>(
           return cssVariableGenerator(
             newPath[0] ?? key,
             newPath.slice(1).join("."),
-            value
+            value,
           );
         }
 
@@ -90,19 +90,22 @@ const createTheming = <T extends AnyObject>(
       .flat();
 
   const convertVariablesToStyles = (
-    generatedVariables: GeneratedCSSVariables
+    generatedVariables: GeneratedCSSVariables,
   ) =>
-    generatedVariables.reduce((result, v) => {
-      if (v) result[`--${v.variable}`] = v.value;
-      return result;
-    }, {} as Record<string, string>);
+    generatedVariables.reduce(
+      (result, v) => {
+        if (v) result[`--${v.variable}`] = v.value;
+        return result;
+      },
+      {} as Record<string, string>,
+    );
 
   const getVariablesAsStyles = (theme: DeepPartial<T>) =>
     convertVariablesToStyles(generateCssVariables(theme));
 
   const attachVariables = (
     node: HTMLElement,
-    generatedVariables: GeneratedCSSVariables
+    generatedVariables: GeneratedCSSVariables,
   ) => {
     generatedVariables.forEach(v => {
       if (!v) return;
@@ -112,7 +115,7 @@ const createTheming = <T extends AnyObject>(
 
   const detachVariables = (
     node: HTMLElement,
-    generatedVariables: GeneratedCSSVariables
+    generatedVariables: GeneratedCSSVariables,
   ) => {
     generatedVariables.forEach(v => {
       if (!v) return;
@@ -125,7 +128,7 @@ const createTheming = <T extends AnyObject>(
 
     const generatedVariables = React.useMemo(
       () => generateCssVariables(theme),
-      [theme]
+      [theme],
     );
 
     const willAttachOnHTMLRoot =
@@ -136,7 +139,7 @@ const createTheming = <T extends AnyObject>(
         !willAttachOnHTMLRoot
           ? convertVariablesToStyles(generatedVariables)
           : undefined,
-      [generatedVariables, willAttachOnHTMLRoot]
+      [generatedVariables, willAttachOnHTMLRoot],
     );
 
     useIsomorphicLayoutEffect(() => {
@@ -180,7 +183,10 @@ const createTheming = <T extends AnyObject>(
 
     return (
       <ThemeContext.Provider value={theme}>
-        <CSSVariableProvider theme={localTheme} isInitialTheme={isInitialTheme}>
+        <CSSVariableProvider
+          theme={localTheme}
+          isInitialTheme={isInitialTheme}
+        >
           {children}
         </CSSVariableProvider>
       </ThemeContext.Provider>
@@ -190,7 +196,7 @@ const createTheming = <T extends AnyObject>(
   return {
     useTheme,
     ThemeProvider,
-    getVariablesAsStyles
+    getVariablesAsStyles,
   };
 };
 

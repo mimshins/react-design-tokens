@@ -61,7 +61,7 @@ pnpm install
 5. Create a new topic branch:
 
 ```sh
-git checkout -b my-topic-branch
+git switch -c my-topic-branch
 ```
 
 6. Make changes, commit and push to your fork:
@@ -79,7 +79,7 @@ The core team is monitoring for Pull Requests. We will review your Pull Request 
 Start developing server and watch for code changes:
 
 ```sh
-pnpm next:dev
+pnpm dev
 ```
 
 The local dev server is a NextJS app.

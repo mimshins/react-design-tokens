@@ -11,7 +11,7 @@ const isPlainObject = (x: unknown): x is AnyObject => {
 
 const shallowMerge = <T extends AnyObject, S extends AnyObject>(
   target: T,
-  source: S
+  source: S,
 ): Merged<T, S> => {
   if (!isPlainObject(target) || !isPlainObject(source))
     throw new Error("Invalid inputs. Provide plain objects as inputs.");
