@@ -1,11 +1,7 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "target": "ES6",
-    "outDir": "./dist/esm",
-    "declaration": true,
-    "noEmit": false,
-    "jsx": "react-jsx"
-  },
-  "include": ["lib/**/*.ts", "lib/**/*.tsx"]
+    "module": "ESNext",
+    "outDir": "./dist/esm"
+  }
 }

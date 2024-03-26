@@ -9,7 +9,7 @@
     "noImplicitAny": true,
     "noUnusedParameters": true,
     "incremental": true,
-    "target": "ESNext",
+    "target": "ES5",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
@@ -27,6 +27,6 @@
     "jsx": "preserve",
     "plugins": [{ "name": "next" }]
   },
-  "include": ["lib", "app", "scripts", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }
