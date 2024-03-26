@@ -46,6 +46,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
+          path: dist
 
       - name: "🚀 publish package"
         run: npx tsx ./scripts/ci/publish-package.ts
