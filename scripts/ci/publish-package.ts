@@ -20,7 +20,7 @@ void (async () => {
   const { tag = "latest" } =
     (packageJSON.publishConfig as { tag: string } | undefined) ?? {};
 
-  const { stderr, stdout } = await execCmd(`npm publish --tag ${tag}`);
+  const { stderr, stdout } = await execCmd(`npm publish ./dist/ --tag ${tag}`);
 
   console.log({ stdout });
   console.error({ stderr });

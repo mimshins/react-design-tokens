@@ -1,6 +1,6 @@
 {
   "name": "react-design-tokens",
-  "version": "2.0.0-canary.2",
+  "version": "2.0.0-canary.3",
   "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
   "license": "MIT",
   "type": "module",
