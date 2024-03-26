@@ -30,8 +30,8 @@
   "scripts": {
     "dev": "next dev",
     "prod": "next build && next start",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --passWithNoTests --watch",
     "lint": "tsc --project tsconfig.lint.json && eslint \"**/*.{ts,tsx}\" --config .eslintrc",
     "lint:fix": "tsc --project tsconfig.lint.json && eslint \"**/*.{ts,tsx}\" --config .eslintrc --fix",
     "clear": "rimraf dist",
