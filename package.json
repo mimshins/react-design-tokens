@@ -1,6 +1,6 @@
 {
   "name": "react-design-tokens",
-  "version": "2.0.0-canary.3",
+  "version": "2.0.0-rc.0",
   "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
   "license": "MIT",
   "type": "module",
@@ -11,7 +11,7 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/",
-    "tag": "canary"
+    "tag": "rc"
   },
   "engines": {
     "node": ">=20"
@@ -82,5 +82,6 @@
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.3"
-  }
+  },
+  "packageManager": "pnpm@8.15.6+sha256.01c01eeb990e379b31ef19c03e9d06a14afa5250b82e81303f88721c99ff2e6f"
 }
