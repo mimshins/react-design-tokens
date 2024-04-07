@@ -1,49 +1,64 @@
-import { createTheming, defaultCssVariableGenerator } from "../lib";
+import { create } from "../lib";
 
-export const theme = {
-  colors: {
-    primary: {
-      base: "1",
-      hover: "2",
-      active: "3",
-      disabled: "4",
-    },
-    secondary: {
-      base: "5",
-      hover: "6",
-      active: "7",
-      disabled: "8",
-    },
-    neutral: {
-      text: {
-        base: "9",
-        secondary: "10",
-        tertiary: "11",
+const variants = {
+  dark: {
+    colors: {
+      primary: {
+        base: "d1",
+        hover: "d2",
+        active: "d3",
+        disabled: "d4",
       },
-      background: {
-        base: "12",
-        container: "13",
-        elevated: "14",
+      secondary: {
+        base: "d5",
+        hover: "d6",
+        active: "d7",
+        disabled: "d8",
+      },
+      neutral: {
+        text: {
+          base: "d9",
+          secondary: "d10",
+          tertiary: "d11",
+        },
+        background: {
+          base: "d12",
+          container: "d13",
+          elevated: "d14",
+        },
       },
     },
+    boolean: true,
   },
-  dark: 1,
+  light: {
+    colors: {
+      primary: {
+        base: "l1",
+        hover: "l2",
+        active: "l3",
+        disabled: "l4",
+      },
+      secondary: {
+        base: "l5",
+        hover: "l6",
+        active: "l7",
+        disabled: "l8",
+      },
+      neutral: {
+        text: {
+          base: "l9",
+          secondary: "l10",
+          tertiary: "l11",
+        },
+        background: {
+          base: "l12",
+          container: "l13",
+          elevated: "l14",
+        },
+      },
+    },
+    boolean: false,
+  },
 };
 
-const tokenFamilyNameMap: Record<keyof typeof theme, string> = {
-  colors: "color",
-  dark: "dark",
-};
-
-export const { ThemeProvider, useTheme, getVariablesAsStyles } = createTheming(
-  theme,
-  {
-    initializeVariablesOnHTMLRoot: true,
-    cssVariableGenerator: (tokenFamilyKey, tokenPath, tokenValue) =>
-      defaultCssVariableGenerator(
-        tokenFamilyNameMap[tokenFamilyKey].toLowerCase(),
-        tokenPath,
-        tokenValue,
-      ),
-  },
-);
+export const { VariantSelector, useTokens } = create(variants);
