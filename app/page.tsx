@@ -1,14 +1,15 @@
 "use client";
 
-import { ThemeProvider } from "./theming";
+import { VariantSelector } from "./theming";
 
 const Page = () => {
   return (
-    <ThemeProvider
-      theme={{ colors: { neutral: { text: { tertiary: "#000" } } } }}
-    >
-      <h1>Dev Page</h1>
-    </ThemeProvider>
+    <>
+      <span>Light</span>
+      <VariantSelector variant="dark">
+        <span>Dark</span>
+      </VariantSelector>
+    </>
   );
 };
 

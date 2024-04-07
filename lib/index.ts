@@ -1,2 +1,6 @@
-export * from "./createTheming";
-export { default as createTheming } from "./createTheming";
+export {
+  defaultCSSVariableGenerator,
+  type CSSVariableGenerator,
+  type GeneratedCSSVariable,
+} from "./VariableGenerator";
+export { default as create } from "./create";

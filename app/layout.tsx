@@ -1,17 +1,10 @@
-"use client";
-
 import * as React from "react";
-import { getVariablesAsStyles, theme, ThemeProvider } from "./theming";
-
-const ssrCssVariables = getVariablesAsStyles(theme);
+import Tokens from "./Tokens";
 
 const RootLayout = (props: { children: React.ReactNode }) => (
-  <html
-    lang="en"
-    style={ssrCssVariables}
-  >
+  <html lang="en">
     <body>
-      <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+      <Tokens>{props.children}</Tokens>
     </body>
   </html>
 );
