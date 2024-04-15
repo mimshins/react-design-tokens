@@ -1,6 +1,6 @@
 {
   "name": "react-design-tokens",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.0",
   "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
   "license": "MIT",
   "type": "module",
