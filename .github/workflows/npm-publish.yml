@@ -42,6 +42,9 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
 
+      - name: "📦 install dependencies"
+        run: pnpm install
+
       - name: "🚚 download package"
         uses: actions/download-artifact@v4
         with:
