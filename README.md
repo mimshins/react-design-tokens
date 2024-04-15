@@ -27,7 +27,15 @@ pnpm add react-design-tokens
 
 The library exposes two APIs, `create` and `defaultCSSVariableGenerator`:
 
-### 1. `create(variants, config?): { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle }`
+### 1. `create`
+
+```ts
+declare const create: (variants, config?) => {
+  VariantSelector,
+  useTokens,
+  generateCSSVariablesAsInlineStyle,
+}
+```
 
 This is the main API exposed by the library. It will take your variants map and an optional config options to create your theming client.
 
@@ -57,14 +65,24 @@ A React hook to use in a component that is descendant of `<VariantSelector>` wra
 
 A helper function to generate CSS variables in valid CSS syntax (`--variable=value`). It is helpful when you want to manually control the population of the CSS variables (e.g. Put initial tokens on html tag with `<html style={generateCSSVariablesAsInlineStyle('dark')} />`)
 
-### 2. `defaultCSSVariableGenerator(context): { variableName: string; variableValue: string } | null`
+### 2. `defaultCSSVariableGenerator`
+
+```ts
+declare const defaultCSSVariableGenerator: (context: {
+    tokenFamilyKey: string;
+    tokenKey: string;
+    tokenPath: string;
+    tokenValue: unknown;
+  }) => {
+    variableName: string;
+    variableValue: string;
+} | null;
+```
 
 The default CSS variable generate function. The generated variables obey the following rules:
 - Values that are not of type `string` or `number` will be omitted (returns `null`).
 - Values of type `number` will be converted into `{tokenValue}px`.
 - The generated variable format: `{ variableName: 'PATH-TO-TOKEN', variableValue: 'tokenValue' }`
-
-The `context` consists of:
 
 #### `context.tokenFamilyKey`:
 
