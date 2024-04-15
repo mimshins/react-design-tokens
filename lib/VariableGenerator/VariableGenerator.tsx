@@ -46,7 +46,7 @@ const VariableGenerator = (props: Props) => {
 
   return (
     <div
-      data-name="VariantGenerator"
+      data-name="VariableGenerator"
       data-variant={variant}
       style={cssVariableProps}
     >

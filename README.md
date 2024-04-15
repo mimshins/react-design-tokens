@@ -9,6 +9,7 @@ An optimized and creative theming solution that generates CSS variables based on
 > Please note that [react](https://www.npmjs.com/package/react) >= 17 and [react-dom](https://www.npmjs.com/package/react-dom) >= 17 are peer dependencies.
 
 Run the following script to install and save in your `package.json` dependencies:
+
 ```bash
 # with npm
 npm install react-design-tokens
@@ -22,36 +23,85 @@ pnpm add react-design-tokens
 
 <hr />
 
-## API
+## API Documentation
 
-The exposed APIs:
+The library exposes two APIs, `create` and `defaultCSSVariableGenerator`:
 
-- `createTheming(defaultTheme, config?) => { useTheme, getVariablesAsStyles, ThemeProvider }`\
-The main exposed API which will return:\
-`useTheme`: A React Hook to hook into the provided theme object.\
-`ThemeProvider`: A React Context Provider to provide the theme object down the tree and also populate the generated CSS variables for it's children.
-`getVariablesAsStyles`: A helper function that gets a theme object and returns its CSS variables as inline `style` DOM property. (Useful when you want to opt-in `initializeVariablesOnHTMLRoot` and you also want your variables to be attached to `:root` during SSR)
-  - `defaultTheme`\
-  The default theme which will be used as `ThemeContext`'s default value.
-  - `config` [optional]\
-  The theming configuration object.
-    - `config.cssVariableGenerator` [optional]\
-    The function which is being used to generate CSS variables based on the provided theme object.
-    - `config.initializeVariablesOnHTMLRoot` [optional | default: `false`]\
-    If set to `true`, initial `<ThemeProvider>` will attach CSS variables to the HTML element (Also known as `:root`).
+### 1. `create(variants, config?): { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle }`
 
-- `defaultCssVariableGenerator(tokenFamilyKey, tokenPath, tokenValue)`\
-The default CSS variable generate function. The generated variables obey the following rules:\
-1- Values that are not of type `string` or `number` will be omitted.\
-2- `number` values will be converted into `{tokenValue}px`.\
-3- Overall variable string: `{path-to-token}: {tokenValue}`
-  - `tokenFamilyKey`\
-  The key of a root token family.
-  - `tokenPath`\
-  The dot-separated path to the token from which the root key has been omitted.
-  - `tokenValue`\
-  The value of the token.
+This is the main API exposed by the library. It will take your variants map and an optional config options to create your theming client.
 
+The `config` options are:
+
+| Property Name | Type | Default | Description |
+|---------------|------|---------|-------------|
+| cssVariableGenerator | `context => ({ variableName: string; variableValue: string; } \| null)` | `defaultCSSVariableGenerator` | The function which is being used to generate CSS variables based on the provided variants map. |
+
+The theming client consists of:
+
+#### `<VariantSelector>`:
+
+A wrapper component which will activate a variant for the tree it's wrapping. The properties are:
+
+| Property Name | Type | Default | Description |
+|---------------|------|---------|-------------|
+| children? | `React.ReactNode` | - | The content of the component. |
+| disableCSSVariableGeneration? | `boolean` | `false` | If `true`, CSS variable generation will be disabled.<br />Useful when you are manually controlling or populating CSS variables using `generateCSSVariablesAsInlineStyle`. |
+| variant | `string` | - | The variant to be activated. It has to be a valid variant key that exists in the provided variants map. |
+
+#### `useTokens()`:
+
+A React hook to use in a component that is descendant of `<VariantSelector>` wrapper. It returns the tokens of the selected variant.
+
+#### `generateCSSVariablesAsInlineStyle(variant)`:
+
+A helper function to generate CSS variables in valid CSS syntax (`--variable=value`). It is helpful when you want to manually control the population of the CSS variables (e.g. Put initial tokens on html tag with `<html style={generateCSSVariablesAsInlineStyle('dark')} />`)
+
+### 2. `defaultCSSVariableGenerator(context): { variableName: string; variableValue: string } | null`
+
+The default CSS variable generate function. The generated variables obey the following rules:
+- Values that are not of type `string` or `number` will be omitted (returns `null`).
+- Values of type `number` will be converted into `{tokenValue}px`.
+- The generated variable format: `{ variableName: 'PATH-TO-TOKEN', variableValue: 'tokenValue' }`
+
+The `context` consists of:
+
+#### `context.tokenFamilyKey`:
+
+The key of a root token family.
+
+For example, The `colors` key is a `tokenFamilyKey` in the following variants map:
+
+```ts
+{
+  dark: {
+    colors: {
+      primary: {},
+      secondary: {},
+      // ...
+    }
+  },
+  light: {
+    colors: {
+      primary: {},
+      secondary: {},
+      // ...
+    }
+  },
+}
+```
+
+#### `context.tokenKey`:
+
+The key (name) of the token.
+
+#### `context.tokenValue`:
+
+The value of the token.
+
+#### `context.tokenPath`:
+
+The dot-separated path to the token from which the root key has been omitted.
 
 <hr />
 
@@ -59,139 +109,185 @@ The default CSS variable generate function. The generated variables obey the fol
 
 To getting started, all you need to do is:
 
-1. Create your own theme:
+1. Create your own variants map:
+
 ```ts
 // theming.ts
 
-export const theme = {
-  colors: {
-    primary: {
-      base: "1",
-      hover: "2",
-      active: "3",
-      disabled: "4"
-    },
-    secondary: {
-      base: "5",
-      hover: "6",
-      active: "7",
-      disabled: "8"
-    },
-    neutral: {
-      text: {
-        base: "9",
-        secondary: "10",
-        tertiary: "11"
+const variants = {
+  dark: {
+    colors: {
+      primary: {
+        base: "d1",
+        hover: "d2",
+        active: "d3",
+        disabled: "d4",
       },
-      background: {
-        base: "12",
-        container: "13",
-        elevated: "14"
-      }
-    }
+      secondary: {
+        base: "d5",
+        hover: "d6",
+        active: "d7",
+        disabled: "d8",
+      },
+      neutral: {
+        text: {
+          base: "d9",
+          secondary: "d10",
+          tertiary: "d11",
+        },
+        background: {
+          base: "d12",
+          container: "d13",
+          elevated: "d14",
+        },
+      },
+    },
   },
-  dark: 1
+  light: {
+    colors: {
+      primary: {
+        base: "l1",
+        hover: "l2",
+        active: "l3",
+        disabled: "l4",
+      },
+      secondary: {
+        base: "l5",
+        hover: "l6",
+        active: "l7",
+        disabled: "l8",
+      },
+      neutral: {
+        text: {
+          base: "l9",
+          secondary: "l10",
+          tertiary: "l11",
+        },
+        background: {
+          base: "l12",
+          container: "l13",
+          elevated: "l14",
+        },
+      },
+    },
+  },
 };
-
-export type Theme = typeof theme;
 ```
 
-2. Create a theming client for your theme: \
-(We recommend to create a theming for each theme object)
+2. Create a theming client:
+
 ```ts
 // theming.ts
-import { createTheming } from "react-design-tokens";
 
-export const theme = {
-  colors: {
-    primary: {
-      base: "1",
-      hover: "2",
-      active: "3",
-      disabled: "4"
-    },
-    secondary: {
-      base: "5",
-      hover: "6",
-      active: "7",
-      disabled: "8"
-    },
-    neutral: {
-      text: {
-        base: "9",
-        secondary: "10",
-        tertiary: "11"
+import { create } from "react-design-tokens";
+
+const variants = {
+  dark: {
+    colors: {
+      primary: {
+        base: "d1",
+        hover: "d2",
+        active: "d3",
+        disabled: "d4",
       },
-      background: {
-        base: "12",
-        container: "13",
-        elevated: "14"
-      }
-    }
+      secondary: {
+        base: "d5",
+        hover: "d6",
+        active: "d7",
+        disabled: "d8",
+      },
+      neutral: {
+        text: {
+          base: "d9",
+          secondary: "d10",
+          tertiary: "d11",
+        },
+        background: {
+          base: "d12",
+          container: "d13",
+          elevated: "d14",
+        },
+      },
+    },
   },
-  dark: 1
+  light: {
+    colors: {
+      primary: {
+        base: "l1",
+        hover: "l2",
+        active: "l3",
+        disabled: "l4",
+      },
+      secondary: {
+        base: "l5",
+        hover: "l6",
+        active: "l7",
+        disabled: "l8",
+      },
+      neutral: {
+        text: {
+          base: "l9",
+          secondary: "l10",
+          tertiary: "l11",
+        },
+        background: {
+          base: "l12",
+          container: "l13",
+          elevated: "l14",
+        },
+      },
+    },
+  },
 };
 
-export type Theme = typeof theme;
-
-export const { ThemeProvider, useTheme } = createTheming(theme);
+export const { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle } = create(variants);
 ```
 
-3. Provide the theme:
+3. Use the theme variants:
+
 ```tsx
 // App.tsx
 
-import { ThemeProvider, theme } from "./theming";
+import { VariantSelector } from "./theming";
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      {/* Components */}
-    </ThemeProvider>
+    <VariantSelector variant="dark">
+      <LayoutComponent>
+        {/* Components with dark variant tokens */}
+      </LayoutComponent>
+      <LayoutComponent>
+        <VariantSelector variant="light">
+          {/* Components with light variant tokens */}
+        </VariantSelector>
+      </LayoutComponent>
+    </VariantSelector>
   );
 }
 
 export default App;
 ```
 
-4. You can now access the `theme` object down the tree using `useTheme` hook. Also you have access to the generated CSS variables in your CSS.
+4. You can now access the tokens down the tree using `useTokens` hook. Also you have access to the generated CSS variables in your CSS.
 
-The CSS variables generated for this theme with default configuration are as follows:
+The CSS variables generated for this variants map with default configuration set and the `dark` variant being selected is:
+
 ```
---colors-primary-base: 1;
---colors-primary-hover: 2;
---colors-primary-active: 3;
---colors-primary-disabled: 4;
---colors-secondary-base: 5;
---colors-secondary-hover: 6;
---colors-secondary-active: 7;
---colors-secondary-disabled: 8;
---colors-neutral-text-base: 9;
---colors-neutral-text-secondary: 10;
---colors-neutral-text-tertiary: 11;
---colors-neutral-background-base: 12;
---colors-neutral-background-container: 13;
---colors-neutral-background-elevated: 14;
---dark: 1px;
+--colors-primary-base: d1;
+--colors-primary-hover: d2;
+--colors-primary-active: d3;
+--colors-primary-disabled: d4;
+--colors-secondary-base: d5;
+--colors-secondary-hover: d6;
+--colors-secondary-active: d7;
+--colors-secondary-disabled: d8;
+--colors-neutral-text-base: d9;
+--colors-neutral-text-secondary: d10;
+--colors-neutral-text-tertiary: d11;
+--colors-neutral-background-base: d12;
+--colors-neutral-background-container: d13;
+--colors-neutral-background-elevated: d14;
 ```
-
-<hr />
-
-## Notes
-
-- You can only access the CSS variables in a sub-tree which is being wrapped with `ThemeProvider`. (In other words, each sub-tree has it's own CSS variables)
-
-- Inner theme objects will be merged with outer theme objects. So to override an outer theme, just provide the tokens you want to change in the child-tree:
-```tsx
-<ThemeProvider theme={theme}>
-  <ThemeProvider
-    theme={{ colors: { neutral: { text: { tertiary: "#000" } } } }}  
-  >
-  </ThemeProvider>
-</ThemeProvider>
-```
-
-<hr />
 
 ## Contributing
 
