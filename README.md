@@ -30,14 +30,25 @@ The library exposes two APIs, `create` and `defaultCSSVariableGenerator`:
 ### 1. `create`
 
 ```ts
-declare const create: (variants, config?) => {
+declare const create: (tokens, config?) => {
   VariantSelector,
   useTokens,
   generateCSSVariablesAsInlineStyle,
 }
 ```
 
-This is the main API exposed by the library. It will take your variants map and an optional config options to create your theming client.
+This is the main API exposed by the library. It will take your tokens and an optional config options to create your theming client.
+
+The `tokens` param expects to have `variants` and `common` tokens provided.
+
+```ts
+const tokens = {
+  variants: {/* The variant tokens map */},
+  common: {/* Tokens that are common and non-variant */}
+}
+```
+
+> Please note that we shallow-merge tokens of a selected variant with common tokens to generate the result tokens. (Merging order: `{ ...variantTokens, ...commonTokens }`)<br />Common tokens can therefore potentially override variant tokens. Make sure they don't have any intersected keys.
 
 The `config` options are:
 
@@ -61,9 +72,15 @@ A wrapper component which will activate a variant for the tree it's wrapping. Th
 
 A React hook to use in a component that is descendant of `<VariantSelector>` wrapper. It returns the tokens of the selected variant.
 
-#### `generateCSSVariablesAsInlineStyle(variant)`:
+#### `generateCSSVariablesAsInlineStyle(variant, options?)`:
 
 A helper function to generate CSS variables in valid CSS syntax (`--variable=value`). It is helpful when you want to manually control the population of the CSS variables (e.g. Put initial tokens on html tag with `<html style={generateCSSVariablesAsInlineStyle('dark')} />`)
+
+The `options` are:
+
+| Property Name | Type | Default | Description |
+|---------------|------|---------|-------------|
+| disableCommonTokensGeneration | `boolean` | `false` | If `true`, Common tokens CSS variable generation will be disabled. |
 
 ### 2. `defaultCSSVariableGenerator`
 
@@ -132,63 +149,74 @@ To getting started, all you need to do is:
 ```ts
 // theming.ts
 
-const variants = {
-  dark: {
-    colors: {
-      primary: {
-        base: "d1",
-        hover: "d2",
-        active: "d3",
-        disabled: "d4",
-      },
-      secondary: {
-        base: "d5",
-        hover: "d6",
-        active: "d7",
-        disabled: "d8",
-      },
-      neutral: {
-        text: {
-          base: "d9",
-          secondary: "d10",
-          tertiary: "d11",
+const tokens = {
+  variants: {
+    dark: {
+      colors: {
+        primary: {
+          base: "d1",
+          hover: "d2",
+          active: "d3",
+          disabled: "d4",
         },
-        background: {
-          base: "d12",
-          container: "d13",
-          elevated: "d14",
+        secondary: {
+          base: "d5",
+          hover: "d6",
+          active: "d7",
+          disabled: "d8",
+        },
+        neutral: {
+          text: {
+            base: "d9",
+            secondary: "d10",
+            tertiary: "d11",
+          },
+          background: {
+            base: "d12",
+            container: "d13",
+            elevated: "d14",
+          },
+        },
+      },
+    },
+    light: {
+      colors: {
+        primary: {
+          base: "l1",
+          hover: "l2",
+          active: "l3",
+          disabled: "l4",
+        },
+        secondary: {
+          base: "l5",
+          hover: "l6",
+          active: "l7",
+          disabled: "l8",
+        },
+        neutral: {
+          text: {
+            base: "l9",
+            secondary: "l10",
+            tertiary: "l11",
+          },
+          background: {
+            base: "l12",
+            container: "l13",
+            elevated: "l14",
+          },
         },
       },
     },
   },
-  light: {
-    colors: {
-      primary: {
-        base: "l1",
-        hover: "l2",
-        active: "l3",
-        disabled: "l4",
-      },
-      secondary: {
-        base: "l5",
-        hover: "l6",
-        active: "l7",
-        disabled: "l8",
-      },
-      neutral: {
-        text: {
-          base: "l9",
-          secondary: "l10",
-          tertiary: "l11",
-        },
-        background: {
-          base: "l12",
-          container: "l13",
-          elevated: "l14",
-        },
-      },
+  common: {
+    typefaces: {
+      monospace: "c1",
+      rtl: "c2",
+      ltr: "c3",
+      decorative: "c4",
     },
-  },
+    space: "c5",
+  }
 };
 ```
 
@@ -199,66 +227,77 @@ const variants = {
 
 import { create } from "react-design-tokens";
 
-const variants = {
-  dark: {
-    colors: {
-      primary: {
-        base: "d1",
-        hover: "d2",
-        active: "d3",
-        disabled: "d4",
-      },
-      secondary: {
-        base: "d5",
-        hover: "d6",
-        active: "d7",
-        disabled: "d8",
-      },
-      neutral: {
-        text: {
-          base: "d9",
-          secondary: "d10",
-          tertiary: "d11",
+const tokens = {
+  variants: {
+    dark: {
+      colors: {
+        primary: {
+          base: "d1",
+          hover: "d2",
+          active: "d3",
+          disabled: "d4",
         },
-        background: {
-          base: "d12",
-          container: "d13",
-          elevated: "d14",
+        secondary: {
+          base: "d5",
+          hover: "d6",
+          active: "d7",
+          disabled: "d8",
+        },
+        neutral: {
+          text: {
+            base: "d9",
+            secondary: "d10",
+            tertiary: "d11",
+          },
+          background: {
+            base: "d12",
+            container: "d13",
+            elevated: "d14",
+          },
+        },
+      },
+    },
+    light: {
+      colors: {
+        primary: {
+          base: "l1",
+          hover: "l2",
+          active: "l3",
+          disabled: "l4",
+        },
+        secondary: {
+          base: "l5",
+          hover: "l6",
+          active: "l7",
+          disabled: "l8",
+        },
+        neutral: {
+          text: {
+            base: "l9",
+            secondary: "l10",
+            tertiary: "l11",
+          },
+          background: {
+            base: "l12",
+            container: "l13",
+            elevated: "l14",
+          },
         },
       },
     },
   },
-  light: {
-    colors: {
-      primary: {
-        base: "l1",
-        hover: "l2",
-        active: "l3",
-        disabled: "l4",
-      },
-      secondary: {
-        base: "l5",
-        hover: "l6",
-        active: "l7",
-        disabled: "l8",
-      },
-      neutral: {
-        text: {
-          base: "l9",
-          secondary: "l10",
-          tertiary: "l11",
-        },
-        background: {
-          base: "l12",
-          container: "l13",
-          elevated: "l14",
-        },
-      },
+  common: {
+    typefaces: {
+      monospace: "c1",
+      rtl: "c2",
+      ltr: "c3",
+      decorative: "c4",
     },
-  },
+    space: "c5",
+  }
 };
 
-export const { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle } = create(variants);
+export const { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle } = create(tokens);
 ```
 
 3. Use the theme variants:
@@ -305,6 +344,11 @@ The CSS variables generated for this variants map with default configuration set
 --colors-neutral-background-base: d12;
 --colors-neutral-background-container: d13;
 --colors-neutral-background-elevated: d14;
+--typefaces-monospace: c1;
+--typefaces-rtl: c2;
+--typefaces-ltr: c3;
+--typefaces-decorative: c4;
+--space: c5;
 ```
 
 ## Contributing
