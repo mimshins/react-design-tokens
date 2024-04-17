@@ -27,9 +27,7 @@ export const generateCssVariables = (
   tokens: Props["tokens"],
   generate: CSSVariableGenerator,
 ): GeneratedCSSVariables => {
-  const variables: GeneratedCSSVariables[] = [];
-
-  const recurse = (
+  const generateForParent = (
     parent: Record<string, unknown>,
     path: string[],
   ): GeneratedCSSVariables => {
@@ -51,19 +49,19 @@ export const generateCssVariables = (
           return result;
         }
 
-        return recurse(tokenValue, newPath);
+        const parentVariables = generateForParent(tokenValue, newPath);
+
+        result.push(...parentVariables);
+
+        return result;
       },
       [] as GeneratedCSSVariables,
     );
 
-    variables.push(cssVariables);
-
     return cssVariables;
   };
 
-  recurse(tokens, []);
-
-  return variables.flat();
+  return generateForParent(tokens, []);
 };
 
 export const getCSSVariablesAsInlineStyle = (
