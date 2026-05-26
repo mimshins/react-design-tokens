@@ -1,5 +1,12 @@
 # react-design-tokens
 
+## 2.0.1
+### Patch Changes
+
+
+
+- [`afd32e2`](https://github.com/mimshins/react-design-tokens/commit/afd32e2cb85440c8ba631d28bd9d5d89f19704b6) Thanks [@mimshins](https://github.com/mimshins)! - Update documentation to replace `create()` with `createTheming()`.
+
 ## 2.0.0
 ### Major Changes
 
