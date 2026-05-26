@@ -85,7 +85,7 @@ const Button = () => {
 ### `createTheming(tokens, config?)`
 
 ```ts
-declare const create: <TVariants, TCommon>(
+declare const createTheming: <TVariants, TCommon>(
   tokens: { variants: TVariants; common: TCommon },
   config?: {
     cssVariableGenerator?: CSSVariableGenerator;
@@ -224,10 +224,10 @@ The default CSS variable generator. Rules:
 - Variable names are derived from the dot-separated token path with the family
   key as prefix: `colors.primary.base` → `--colors-primary-base`
 
-You can pass a custom generator to `create()` to override this behavior:
+You can pass a custom generator to `createTheming()` to override this behavior:
 
 ```ts
-create(tokens, {
+createTheming(tokens, {
   cssVariableGenerator: ({ tokenFamilyKey, tokenPath, tokenValue }) => {
     if (typeof tokenValue !== "string") return null;
     return {
