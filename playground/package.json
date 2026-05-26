@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "prod": "next build && next start"
+  },
+  "dependencies": {
+    "next": "^16.2.6"
+  }
+}

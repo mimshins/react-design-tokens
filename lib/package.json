@@ -1,0 +1,53 @@
+{
+  "name": "react-design-tokens",
+  "version": "2.0.0-rc.3",
+  "description": "An optimized and creative theming solution that generates CSS variables based on the tokens provided.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mimshins/react-design-tokens.git",
+    "directory": "packages/browser"
+  },
+  "bugs": {
+    "url": "https://github.com/mimshins/react-design-tokens/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "react",
+    "theming",
+    "create theme",
+    "theme provider",
+    "design tokens",
+    "css variables",
+    "react css theming",
+    "theming"
+  ],
+  "scripts": {
+    "test": "vitest run --root .",
+    "test:watch": "vitest  --root .",
+    "build": "tsdown",
+    "tslint": "tsc --project ./tsconfig.json",
+    "release": "pnpm publish . --tag latest --access public --no-git-checks"
+  },
+  "peerDependencies": {
+    "react": ">=16.8",
+    "react-dom": ">=16.8"
+  }
+}

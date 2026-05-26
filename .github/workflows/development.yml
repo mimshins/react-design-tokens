@@ -7,52 +7,108 @@ on:
       - edited
       - synchronize
       - reopened
-  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
+  check-branch:
+    name: "Check Branch"
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.check.outputs.should_skip }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ github.head_ref }}" = "changeset-release/main" ]; then
+            echo "should_skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_skip=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Enforce that all PRs that change packages need changesets.
+  # Changes without changesets result in this job failing.
+  changeset-status-check:
+    name: "🔍 Changeset Status Check"
+    runs-on: ubuntu-latest
+    needs: check-branch
+    if: needs.check-branch.outputs.should_skip != 'true'
+    steps:
+      - name: "☁️ Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "🔧 Setup pnpm"
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: "🔧 Setup node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: "📦 Install dependencies"
+        run: |
+          git checkout main
+          git checkout ${{ github.sha }}
+          pnpm install
+
+      - name: "📋 Changeset status"
+        run: pnpm changesets:status
+
   test:
-    name: Test components
+    name: "Unit Tests"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: check-branch
+    if: needs.check-branch.outputs.should_skip != 'true'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
+      - name: "🔧 Setup pnpm"
+        uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 10
 
-      - uses: actions/setup-node@v4
+      - name: "🔧 Setup node"
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "pnpm"
 
-      - name: "📦 install dependencies"
+      - name: "📦 Install dependencies"
         run: pnpm install
 
-      - name: "🔍 run tests"
+      - name: "🔍 Run tests"
         run: pnpm test
 
   lint:
-    name: Code standards
+    name: "Lint Code"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: check-branch
+    if: needs.check-branch.outputs.should_skip != 'true'
     steps:
-      - name: "☁️ checkout repository"
+      - name: "☁️ Checkout repository"
         uses: actions/checkout@v4
 
-      - name: "🔧 setup pnpm"
+      - name: "🔧 Setup pnpm"
         uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 10
 
-      - name: "🔧 setup node"
+      - name: "🔧 Setup node"
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "pnpm"
 
-      - name: "📦 install dependencies"
+      - name: "📦 Install dependencies"
         run: pnpm install
 
-      - name: "🔍 lint code"
-        run: pnpm lint
+      - name: "🔍 Run lints"
+        run: pnpm check:lint

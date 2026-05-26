@@ -1,0 +1,7 @@
+packages:
+  - lib
+  - playground
+
+ignoredBuiltDependencies:
+  - esbuild
+  - unrs-resolver

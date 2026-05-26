@@ -1,14 +1,18 @@
 # React Design Tokens
 
-An optimized and creative theming solution that generates CSS variables based on the tokens provided.
+An optimized and creative theming solution that generates CSS variables based on
+the tokens provided.
 
 <hr />
 
 ## Installation
 
-> Please note that [react](https://www.npmjs.com/package/react) >= 17 and [react-dom](https://www.npmjs.com/package/react-dom) >= 17 are peer dependencies.
+> Please note that [react](https://www.npmjs.com/package/react) >= 17 and
+> [react-dom](https://www.npmjs.com/package/react-dom) >= 17 are peer
+> dependencies.
 
-Run the following script to install and save in your `package.json` dependencies:
+Run the following script to install and save in your `package.json`
+dependencies:
 
 ```bash
 # with npm
@@ -30,82 +34,104 @@ The library exposes two APIs, `create` and `defaultCSSVariableGenerator`:
 ### 1. `create`
 
 ```ts
-declare const create: (tokens, config?) => {
-  VariantSelector,
-  useTokens,
-  generateCSSVariablesAsInlineStyle,
-}
+declare const create: (
+  tokens,
+  config?,
+) => {
+  VariantSelector;
+  useTokens;
+  generateCSSVariablesAsInlineStyle;
+};
 ```
 
-This is the main API exposed by the library. It will take your tokens and an optional config options to create your theming client.
+This is the main API exposed by the library. It will take your tokens and an
+optional config options to create your theming client.
 
 The `tokens` param expects to have `variants` and `common` tokens provided.
 
 ```ts
 const tokens = {
-  variants: {/* The variant tokens map */},
-  common: {/* Tokens that are common and non-variant */}
-}
+  variants: {
+    /* The variant tokens map */
+  },
+  common: {
+    /* Tokens that are common and non-variant */
+  },
+};
 ```
 
-> Please note that we shallow-merge tokens of a selected variant with common tokens to generate the result tokens. (Merging order: `{ ...variantTokens, ...commonTokens }`)<br />Common tokens can therefore potentially override variant tokens. Make sure they don't have any intersected keys.
+> Please note that we shallow-merge tokens of a selected variant with common
+> tokens to generate the result tokens. (Merging order:
+> `{ ...variantTokens, ...commonTokens }`)<br />Common tokens can therefore
+> potentially override variant tokens. Make sure they don't have any intersected
+> keys.
 
 The `config` options are:
 
-| Property Name | Type | Default | Description |
-|---------------|------|---------|-------------|
+| Property Name        | Type                                                                    | Default                       | Description                                                                                    |
+| -------------------- | ----------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
 | cssVariableGenerator | `context => ({ variableName: string; variableValue: string; } \| null)` | `defaultCSSVariableGenerator` | The function which is being used to generate CSS variables based on the provided variants map. |
 
 The theming client consists of:
 
 #### `<VariantSelector>`:
 
-A wrapper component which will activate a variant for the tree it's wrapping. The properties are:
+A wrapper component which will activate a variant for the tree it's wrapping.
+The properties are:
 
-| Property Name | Type | Default | Description |
-|---------------|------|---------|-------------|
-| children? | `React.ReactNode` | - | The content of the component. |
-| disableCSSVariableGeneration? | `boolean` | `false` | If `true`, CSS variable generation will be disabled.<br />Useful when you are manually controlling or populating CSS variables using `generateCSSVariablesAsInlineStyle`. |
-| variant | `string` | - | The variant to be activated. It has to be a valid variant key that exists in the provided variants map. |
+| Property Name                 | Type              | Default | Description                                                                                                                                                               |
+| ----------------------------- | ----------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children?                     | `React.ReactNode` | -       | The content of the component.                                                                                                                                             |
+| disableCSSVariableGeneration? | `boolean`         | `false` | If `true`, CSS variable generation will be disabled.<br />Useful when you are manually controlling or populating CSS variables using `generateCSSVariablesAsInlineStyle`. |
+| variant                       | `string`          | -       | The variant to be activated. It has to be a valid variant key that exists in the provided variants map.                                                                   |
 
 #### `useTokens()`:
 
-A React hook to use in a component that is descendant of `<VariantSelector>` wrapper. It returns the tokens of the selected variant.
+A React hook to use in a component that is descendant of `<VariantSelector>`
+wrapper. It returns the tokens of the selected variant.
 
 #### `generateCSSVariablesAsInlineStyle(variant, options?)`:
 
-A helper function to generate CSS variables in valid CSS syntax (`--variable=value`). It is helpful when you want to manually control the population of the CSS variables (e.g. Put initial tokens on html tag with `<html style={generateCSSVariablesAsInlineStyle('dark')} />`)
+A helper function to generate CSS variables in valid CSS syntax
+(`--variable=value`). It is helpful when you want to manually control the
+population of the CSS variables (e.g. Put initial tokens on html tag with
+`<html style={generateCSSVariablesAsInlineStyle('dark')} />`)
 
 The `options` are:
 
-| Property Name | Type | Default | Description |
-|---------------|------|---------|-------------|
+| Property Name                 | Type      | Default | Description                                                        |
+| ----------------------------- | --------- | ------- | ------------------------------------------------------------------ |
 | disableCommonTokensGeneration | `boolean` | `false` | If `true`, Common tokens CSS variable generation will be disabled. |
 
 ### 2. `defaultCSSVariableGenerator`
 
 ```ts
 declare const defaultCSSVariableGenerator: (context: {
-    tokenFamilyKey: string;
-    tokenKey: string;
-    tokenPath: string;
-    tokenValue: unknown;
-  }) => {
-    variableName: string;
-    variableValue: string;
+  tokenFamilyKey: string;
+  tokenKey: string;
+  tokenPath: string;
+  tokenValue: unknown;
+}) => {
+  variableName: string;
+  variableValue: string;
 } | null;
 ```
 
-The default CSS variable generate function. The generated variables obey the following rules:
-- Values that are not of type `string` or `number` will be omitted (returns `null`).
+The default CSS variable generate function. The generated variables obey the
+following rules:
+
+- Values that are not of type `string` or `number` will be omitted (returns
+  `null`).
 - Values of type `number` will be converted into `{tokenValue}px`.
-- The generated variable format: `{ variableName: 'PATH-TO-TOKEN', variableValue: 'tokenValue' }`
+- The generated variable format:
+  `{ variableName: 'PATH-TO-TOKEN', variableValue: 'tokenValue' }`
 
 #### `context.tokenFamilyKey`:
 
 The key of a root token family.
 
-For example, The `colors` key is a `tokenFamilyKey` in the following variants map:
+For example, The `colors` key is a `tokenFamilyKey` in the following variants
+map:
 
 ```ts
 {
@@ -216,7 +242,7 @@ const tokens = {
       decorative: "c4",
     },
     space: "c5",
-  }
+  },
 };
 ```
 
@@ -294,10 +320,11 @@ const tokens = {
       decorative: "c4",
     },
     space: "c5",
-  }
+  },
 };
 
-export const { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle } = create(tokens);
+export const { useTokens, VariantSelector, generateCSSVariablesAsInlineStyle } =
+  create(tokens);
 ```
 
 3. Use the theme variants:
@@ -320,14 +347,16 @@ const App = () => {
       </LayoutComponent>
     </VariantSelector>
   );
-}
+};
 
 export default App;
 ```
 
-4. You can now access the tokens down the tree using `useTokens` hook. Also you have access to the generated CSS variables in your CSS.
+4. You can now access the tokens down the tree using `useTokens` hook. Also you
+   have access to the generated CSS variables in your CSS.
 
-The CSS variables generated for this variants map with default configuration set and the `dark` variant being selected is:
+The CSS variables generated for this variants map with default configuration set
+and the `dark` variant being selected is:
 
 ```
 --colors-primary-base: d1;
@@ -353,11 +382,16 @@ The CSS variables generated for this variants map with default configuration set
 
 ## Contributing
 
-Read the [contributing guide](https://github.com/mimshins/react-design-tokens/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes.
+Read the
+[contributing guide](https://github.com/mimshins/react-design-tokens/blob/main/CONTRIBUTING.md)
+to learn about our development process, how to propose bug fixes and
+improvements, and how to build and test your changes.
 
-Contributing to `react-design-tokens` is about more than just issues and pull requests! There are many other ways to support the project beyond contributing to the code base.
-
+Contributing to `react-design-tokens` is about more than just issues and pull
+requests! There are many other ways to support the project beyond contributing
+to the code base.
 
 ## License
 
-This project is licensed under the terms of the [MIT license](https://github.com/mimshins/react-design-tokens/blob/main/LICENSE).
+This project is licensed under the terms of the
+[MIT license](https://github.com/mimshins/react-design-tokens/blob/main/LICENSE).
